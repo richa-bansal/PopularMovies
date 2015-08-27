@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PopularMovies</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">DetailActivity</string>
+
+    <string-array name="prefList">
+        <item name="by_most_popular">By Most Popular</item>
+        <item name="by_highest_rated">By Highest Rating</item>
+    </string-array>
+    <string-array name="prefListValues">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="pref_sort_order_key">sort_order</string>
+    <string name="pref_sort_order_title">Sort Order</string>
+    <string name="pref_sort_order_dialog">Sort Order</string>
+    <string name="pref_sort_order_default">By Most Popular</string>
+
+</resources>
