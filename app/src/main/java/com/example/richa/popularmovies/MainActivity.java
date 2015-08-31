@@ -41,7 +41,7 @@ public class MainActivity extends ActionBarActivity implements TaskFragment.Task
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mMovies = new ArrayList<MovieJsonObject>();
+       // mMovies = new ArrayList<MovieJsonObject>();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         sharedPref.registerOnSharedPreferenceChangeListener(this);
         fm = getSupportFragmentManager();
@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements TaskFragment.Task
             loadTaskFragment();
         }
         mViewFragment = (ViewFragment) fm.findFragmentByTag(TAG_VIEW_FRAGMENT);
-        if (mViewFragment ==null) {
+        if (mViewFragment ==null && mMovies !=null) {
             loadViewFragment();
         }
 
@@ -114,9 +114,9 @@ public class MainActivity extends ActionBarActivity implements TaskFragment.Task
             if (mViewFragment !=null) {
 
                 fm.beginTransaction().remove(mViewFragment).commit();
-                mViewFragment = new ViewFragment();
-                loadViewFragment();
             }
+                loadViewFragment();
+
         }
     }
 
