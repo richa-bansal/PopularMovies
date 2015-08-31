@@ -1,6 +1,7 @@
 package com.example.richa.popularmovies;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -40,5 +41,7 @@ public class SettingsActivity extends Activity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
         }
-    }
+
+
+  }
 }

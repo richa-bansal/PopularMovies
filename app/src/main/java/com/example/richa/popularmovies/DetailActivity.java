@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,6 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.ImageView;
+import android.widget.RatingBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -67,16 +70,21 @@ public class DetailActivity extends ActionBarActivity {
             View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
             TextView titleTV = (TextView)rootView.findViewById(R.id.titleTextView);
             TextView overviewTV = (TextView)rootView.findViewById(R.id.overviewTextView);
+            overviewTV.setMovementMethod(new ScrollingMovementMethod());
             TextView releaseDateTV = (TextView)rootView.findViewById(R.id.releaseDate);
+            RatingBar ratingBar = (RatingBar)rootView.findViewById(R.id.ratingBar);
             TextView voteTV = (TextView)rootView.findViewById(R.id.voteTextView);
             ImageView imageView = (ImageView)rootView.findViewById(R.id.posterThumbnail);
 
             Intent i = getActivity().getIntent();
 
             titleTV.setText(i.getStringExtra("Title"));
+
             overviewTV.setText(i.getStringExtra("Overview"));
             releaseDateTV.setText(i.getStringExtra("Release").substring(0,4));
-            voteTV.setText(i.getStringExtra("Rating")+"/10");
+            String rating = i.getStringExtra("Rating");
+            voteTV.setText(rating+"/10");
+            ratingBar.setRating(Float.parseFloat(rating));
             Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w185/" + i.getStringExtra("PosterPath")).into(imageView);
 
             return rootView;

@@ -1,9 +1,12 @@
 package com.example.richa.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Richa on 8/24/15.
  */
-public class MovieJsonObject {
+public class MovieJsonObject implements Parcelable{
     private String adult;
     private String backdrop_path;
     private String id;
@@ -111,5 +114,26 @@ public class MovieJsonObject {
 
     public void setVote_count(String vote_count) {
         this.vote_count = vote_count;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(adult);
+        dest.writeString(backdrop_path);
+        dest.writeString(id);
+        dest.writeString(original_language);
+        dest.writeString(original_title);
+        dest.writeString(overview);
+        dest.writeString(release_date);
+        dest.writeString(poster_path);
+        dest.writeString(title);
+        dest.writeString(video);
+        dest.writeString(vote_average);
+        dest.writeString(vote_count);
     }
 }
