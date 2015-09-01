@@ -53,7 +53,7 @@ public class MainActivity extends ActionBarActivity implements TaskFragment.Task
             loadTaskFragment();
         }
         mViewFragment = (ViewFragment) fm.findFragmentByTag(TAG_VIEW_FRAGMENT);
-        if (mViewFragment ==null && mMovies !=null) {
+        if (mMovies !=null) {
             loadViewFragment();
         }
 

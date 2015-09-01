@@ -1,9 +1,12 @@
 package com.example.richa.popularmovies;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +39,10 @@ public class ViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridView);
+        if (getScreenOrientation()==Configuration.ORIENTATION_PORTRAIT)
+            gridview.setNumColumns(3);
+        else
+            gridview.setNumColumns(5);
         mAdapter = new MovieAdapter(getActivity(),mMovies);
         gridview.setAdapter(mAdapter);
 
@@ -54,6 +61,18 @@ public class ViewFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    public int getScreenOrientation()
+    {
+        int orientation;
+        if(getResources().getDisplayMetrics().widthPixels<getResources().getDisplayMetrics().heightPixels){
+            orientation = Configuration.ORIENTATION_PORTRAIT;
+        }else {
+            orientation = Configuration.ORIENTATION_LANDSCAPE;
+        }
+
+        return orientation;
     }
 
 

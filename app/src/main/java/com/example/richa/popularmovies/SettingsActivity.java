@@ -15,12 +15,12 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (savedInstanceState == null) {
 
             getFragmentManager().beginTransaction()
@@ -28,6 +28,8 @@ public class SettingsActivity extends Activity {
                     .commit();
         }
     }
+
+
   /**
      * A placeholder fragment containing a simple view.
      */
