@@ -1,14 +1,14 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     tools:context="com.example.richa.popularmovies.DetailActivity$PlaceholderFragment">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="100dp"
         android:textSize="@dimen/abc_text_size_display_1_material"
         android:textColor="#FFFFFF"
         android:gravity="center_vertical"
@@ -18,16 +18,14 @@
         />
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
-                android:layout_height="0dp"
-                android:layout_weight="2"
+                android:layout_height="200dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp">
                 <ImageView
@@ -52,25 +50,35 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:numStars="10"
-                            android:isIndicator="true"/>
+                            android:isIndicator="true"
+                            android:layout_marginTop="10dp"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textSize="15sp"
                             android:id="@+id/voteTextView"/>
+                        <ToggleButton
+                            android:layout_width="90dp"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/favButton"
+                            android:textOff="Mark As Favorite"
+                            android:textOn="Remove From Favorite"
+                            android:layout_marginTop="20dp" />
+
                     </LinearLayout>
             </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
                     android:id="@+id/overviewTextView"
                     android:textSize="15sp"
-                    android:maxLines="7"
-                    android:scrollbars="vertical"/>
+                    />
 
     </LinearLayout>
 
 
+
+
 </LinearLayout>
+

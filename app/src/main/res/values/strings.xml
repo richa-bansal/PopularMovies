@@ -9,10 +9,12 @@
     <string-array name="prefList">
         <item name="by_most_popular">By Most Popular</item>
         <item name="by_highest_rated">By Highest Rating</item>
+        <item name="by favorite">By Favorite</item>
     </string-array>
     <string-array name="prefListValues">
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </string-array>
 
     <string name="title_activity_settings">SettingsActivity</string>
@@ -20,5 +22,8 @@
     <string name="pref_sort_order_title">Sort Order</string>
     <string name="pref_sort_order_dialog">Sort Order</string>
     <string name="pref_sort_order_default">By Most Popular</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="trailers_label">Trailers:</string>
+    <string name="reviews_label">Reviews:</string>
 
 </resources>

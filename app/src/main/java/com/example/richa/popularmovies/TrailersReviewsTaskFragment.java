@@ -1,18 +1,18 @@
 package com.example.richa.popularmovies;
 
 import android.app.Activity;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.example.richa.popularmovies.Json.MovieDetailJsonParser;
+import com.example.richa.popularmovies.Json.ReviewJsonObject;
+import com.example.richa.popularmovies.Json.TrailerJsonObject;
+import com.example.richa.popularmovies.Json.TrailersReviews;
 
 import org.json.JSONException;
 
@@ -25,29 +25,22 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Created by Richa on 8/28/15.
+ * Created by Richa on 9/17/15.
  */
-public class TaskFragment extends Fragment {
+public class TrailersReviewsTaskFragment extends Fragment{
 
     /**
      * Callback interface through which the fragment will report the
      * task's progress and results back to the Activity.
      */
-    interface TaskCallbacks {
-        void onPostExecute(ArrayList<MovieJsonObject> movieJsonObjects);
+    interface TrailersReviewsTaskCallbacks {
+        void onPostExecute(TrailersReviews trailersReviews);
     }
 
-    private TaskCallbacks mCallbacks;
-    private FetchMovieDataTask mTask;
-    private int mSharedPreferenceChangeFlag = 0; // 1 means that Shared preference has changed and 0 means no change
+    private TrailersReviewsTaskCallbacks mCallbacks;
+    private FetchDetailDataTask mTask;
+    private String movieId;
 
-    public int getmSharedPreferenceChangeFlag() {
-        return mSharedPreferenceChangeFlag;
-    }
-
-    public void setmSharedPreferenceChangeFlag(int mSharedPreferenceChangeFlag) {
-        this.mSharedPreferenceChangeFlag = mSharedPreferenceChangeFlag;
-    }
 
     /**
      * Hold a reference to the parent Activity so we can report the
@@ -58,7 +51,7 @@ public class TaskFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        mCallbacks = (TaskCallbacks) activity;
+        mCallbacks = (TrailersReviewsTaskCallbacks) activity;
     }
 
     /**
@@ -68,17 +61,16 @@ public class TaskFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Retain this fragment across configuration changes.
         setRetainInstance(true);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String sortOrderPref = sharedPref.getString(getString(R.string.pref_sort_order_key), getString(R.string.pref_sort_order_default));
+        movieId = getArguments().getString("MovieId");
+
         // Create and execute the background task.
-        if (isNetworkAvailable()) {
-            mTask = new FetchMovieDataTask();
-            mTask.execute(sortOrderPref);
+        if (Utils.isNetworkAvailable(getActivity())) {
+            mTask = new FetchDetailDataTask();
+            mTask.execute(movieId);
         }else
-            Toast.makeText(getActivity(),"No Network Connection", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "No Network Connection.", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -90,43 +82,34 @@ public class TaskFragment extends Fragment {
         super.onDetach();
         mCallbacks = null;
     }
-    private Boolean isNetworkAvailable(){
-        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo !=null && activeNetworkInfo.isConnected();
-
-    }
 
 
-    private class FetchMovieDataTask extends AsyncTask<String,Void,ArrayList<MovieJsonObject>> {
+
+    private class FetchDetailDataTask extends AsyncTask<String,Void, TrailersReviews> {
 
         private final String LOG_TAG = getClass().getSimpleName();
         private final String API_KEY = "";
 
 
         @Override
-        protected ArrayList<MovieJsonObject> doInBackground(String... params) {
+        protected TrailersReviews doInBackground(String... params) {
 
-            String sortOrder;
-            if (params[0].equals("2"))
-                sortOrder = "vote_average.desc";
-            else
-                sortOrder = "popularity.desc";
+
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             // Will contain the raw JSON response as a string.
             String movieJsonStr = null;
             try {
 
-                //http://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=01e1a5dfefecda457b4ebe0d8d218a5c
+
                 Uri.Builder builder = new Uri.Builder();
                 Uri builtUri = builder.scheme("http")
                         .authority("api.themoviedb.org")
                         .appendPath("3")
-                        .appendPath("discover")
                         .appendPath("movie")
-                        .appendQueryParameter("sort_by", sortOrder)
+                        .appendPath(params[0])
                         .appendQueryParameter("api_key", API_KEY)
+                        .appendQueryParameter("append_to_response", "trailers,reviews")
                         .build();
 
                 URL url = new URL(builtUri.toString());
@@ -170,21 +153,26 @@ public class TaskFragment extends Fragment {
                     }
                 }
             }
-            try {
-                return MovieJsonParser.getMovieDataFromJson(movieJsonStr);
+           try {
+                ArrayList<TrailerJsonObject> trailerJsonObjects = MovieDetailJsonParser.getMovieTrailersFromJson(movieJsonStr);
+               ArrayList<ReviewJsonObject> reviewJsonObjects = MovieDetailJsonParser.getMovieReviewsFromJson(movieJsonStr);
+               TrailersReviews trailersReviews = new TrailersReviews();
+               trailersReviews.setReviewJsonObjects(reviewJsonObjects);
+               trailersReviews.setTrailerJsonObjects(trailerJsonObjects);
+               return trailersReviews;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            //Log.d(LOG_TAG,movieJsonStr);
             return null;
         }
 
-    @Override
-    protected void onPostExecute(ArrayList<MovieJsonObject> movieJsonObjects) {
-
-        if (mCallbacks != null) {
-            mCallbacks.onPostExecute(movieJsonObjects);
+        @Override
+        protected void onPostExecute(TrailersReviews trailersReviews) {
+            if (mCallbacks !=null)
+                mCallbacks.onPostExecute(trailersReviews);
         }
-    }
     }
 
 }
+

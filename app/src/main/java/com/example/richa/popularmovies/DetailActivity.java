@@ -1,36 +1,75 @@
 package com.example.richa.popularmovies;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
-import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.example.richa.popularmovies.Json.MovieJsonObject;
+import com.example.richa.popularmovies.Json.TrailersReviews;
 
 
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends ActionBarActivity implements TrailersReviewsTaskFragment.TrailersReviewsTaskCallbacks,
+DetailViewFragment.localDbChangeListener{
+    private static final String TAG_DETAIL_TASK_FRAGMENT = "detail_task_fragment";
+    private static final String TAG_DETAIL_VIEW_FRAGMENT = "detail_view_fragment";
+    private static final String TAG_TRAILERS = "Trailers";
+    private static final String TAG_TRAILERS_FRAGMENT = "trailer_view_fragment";
+
+
+
+    /*based on the design pattern documented here:
+    http://www.androiddesignpatterns.com/2013/04/retaining-objects-across-config-changes.html */
+    private TrailersReviewsTaskFragment mTaskFragment; //Fragment associated with Async Task
+    private TrailersReviewsViewFragment mTrailersReviewsViewFragment;
+    private DetailViewFragment mDetailViewFragment;
+
+    private FragmentManager fm;
+    private String movieId;
+    private MovieJsonObject movieObject;
+    private TrailersReviews mTrailersReviews;
+    private boolean mLocalDbChangeFlag = false;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        if (savedInstanceState == null) {
+        Intent i = getIntent();
+        Bundle b = i.getExtras();
+        movieObject = b.getParcelable("MovieObject");
+
+        movieId = movieObject.getId();
+
+        fm = getSupportFragmentManager();
+        mTaskFragment = (TrailersReviewsTaskFragment) fm.findFragmentByTag(TAG_DETAIL_TASK_FRAGMENT);
+
+        // If the Fragment is non-null, then it is currently being
+        // retained across a configuration change.
+        if (mTaskFragment == null) {
+            loadTaskFragment();
+        }
+        mDetailViewFragment = (DetailViewFragment)fm.findFragmentByTag(TAG_DETAIL_VIEW_FRAGMENT);
+        //load DetailViewFragment
+        if (mDetailViewFragment == null) {
+            mDetailViewFragment = new DetailViewFragment();
+            Bundle arg = new Bundle();
+            arg.putParcelable("MovieObject",movieObject);
+            mDetailViewFragment.setArguments(arg);
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, mDetailViewFragment, TAG_DETAIL_VIEW_FRAGMENT)
                     .commit();
         }
+        //load TrailersFragment
+
+        if (mTrailersReviews!=null)
+            loadTrailersFragment();
+
+
     }
 
 
@@ -56,38 +95,40 @@ public class DetailActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
+    private void loadTaskFragment(){
+        mTaskFragment = new TrailersReviewsTaskFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("MovieId",movieId);
+        mTaskFragment.setArguments(bundle);
+        fm.beginTransaction().add(mTaskFragment, TAG_DETAIL_TASK_FRAGMENT).commit();
+    }
+    private void loadTrailersFragment(){
+        mTrailersReviewsViewFragment = new TrailersReviewsViewFragment();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(TAG_TRAILERS, mTrailersReviews);
+        mTrailersReviewsViewFragment.setArguments(bundle);
+        fm.beginTransaction().add(R.id.container, mTrailersReviewsViewFragment,TAG_TRAILERS_FRAGMENT).commit();
+    }
 
-        public PlaceholderFragment() {
+
+    @Override
+    public void onPostExecute(TrailersReviews trailersReviews) {
+
+        mTrailersReviewsViewFragment = (TrailersReviewsViewFragment) fm.findFragmentByTag(TAG_TRAILERS_FRAGMENT);
+        if (trailersReviews!=null ){
+            mTrailersReviews = trailersReviews;
+            if (mTrailersReviewsViewFragment !=null){
+                fm.beginTransaction().remove(mTrailersReviewsViewFragment).commit();
+            }
+            loadTrailersFragment();
         }
+    }
 
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
-            TextView titleTV = (TextView)rootView.findViewById(R.id.titleTextView);
-            TextView overviewTV = (TextView)rootView.findViewById(R.id.overviewTextView);
-            overviewTV.setMovementMethod(new ScrollingMovementMethod());
-            TextView releaseDateTV = (TextView)rootView.findViewById(R.id.releaseDate);
-            RatingBar ratingBar = (RatingBar)rootView.findViewById(R.id.ratingBar);
-            TextView voteTV = (TextView)rootView.findViewById(R.id.voteTextView);
-            ImageView imageView = (ImageView)rootView.findViewById(R.id.posterThumbnail);
-
-            Intent i = getActivity().getIntent();
-
-            titleTV.setText(i.getStringExtra("Title"));
-
-            overviewTV.setText(i.getStringExtra("Overview"));
-            releaseDateTV.setText(i.getStringExtra("Release").substring(0,4));
-            String rating = i.getStringExtra("Rating");
-            voteTV.setText(rating+"/10");
-            ratingBar.setRating(Float.parseFloat(rating));
-            Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w185/" + i.getStringExtra("PosterPath")).into(imageView);
-
-            return rootView;
-        }
+    @Override
+    public void onDbChange() {
+        mLocalDbChangeFlag = true;
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("LocalDbChangeFlag",mLocalDbChangeFlag);
+        setResult(RESULT_OK, resultIntent);
     }
 }

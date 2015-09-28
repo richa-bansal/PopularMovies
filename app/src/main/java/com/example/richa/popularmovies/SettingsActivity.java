@@ -1,6 +1,8 @@
 package com.example.richa.popularmovies;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.ActionBarActivity;
@@ -46,4 +48,5 @@ public class SettingsActivity extends ActionBarActivity {
 
 
   }
+
 }

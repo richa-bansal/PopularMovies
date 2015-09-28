@@ -2,29 +2,35 @@ package com.example.richa.popularmovies;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.view.Display;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.example.richa.popularmovies.Json.MovieJsonObject;
+
 import java.util.ArrayList;
 
 /**
  * Created by Richa on 8/28/15.
  */
-public class ViewFragment extends Fragment {
+public class MainViewFragment extends Fragment {
     private MovieAdapter mAdapter;
     private ArrayList<MovieJsonObject> mMovies;
     private static final String TAG_MOVIES = "Movies";
 
-    public ViewFragment() {
 
+    public MainViewFragment() {
+
+    }
+
+    public interface callback{
+        public void onItemSelected(MovieJsonObject movieJsonObject);
     }
 
     @Override
@@ -32,6 +38,7 @@ public class ViewFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(false);
         mMovies = getArguments().getParcelableArrayList(TAG_MOVIES);
+
     }
 
     @Override
@@ -39,25 +46,27 @@ public class ViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridView);
-        if (getScreenOrientation()==Configuration.ORIENTATION_PORTRAIT)
-            gridview.setNumColumns(3);
+        if (getScreenOrientation()==Configuration.ORIENTATION_PORTRAIT) {
+            Configuration config = getActivity().getResources().getConfiguration();
+            if (config.smallestScreenWidthDp >= 600)
+               gridview.setNumColumns(6);
+            else
+                gridview.setNumColumns(3);
+        }
         else
             gridview.setNumColumns(5);
         mAdapter = new MovieAdapter(getActivity(),mMovies);
         gridview.setAdapter(mAdapter);
 
 
+
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                Intent i = new Intent(getActivity(),DetailActivity.class);
-                i.putExtra("Title", mAdapter.getItem(position).getOriginal_title());
-                i.putExtra("Overview",mAdapter.getItem(position).getOverview());
-                i.putExtra("Release",mAdapter.getItem(position).getRelease_date());
-                i.putExtra("Rating",mAdapter.getItem(position).getVote_average());
-                i.putExtra("PosterPath",mAdapter.getItem(position).getPoster_path());
 
-                startActivity(i);
+
+                ((callback)getActivity()).onItemSelected(mAdapter.getItem(position));
+
             }
         });
         return rootView;

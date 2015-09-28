@@ -1,4 +1,4 @@
-package com.example.richa.popularmovies;
+package com.example.richa.popularmovies.Json;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -19,6 +19,18 @@ public class MovieJsonObject implements Parcelable{
     private String video;
     private String vote_average;
     private String vote_count;
+    private long localDbRow_id;
+
+    public MovieJsonObject() {
+    }
+
+    public long getLocalDbRow_id() {
+        return localDbRow_id;
+    }
+
+    public void setLocalDbRow_id(long localDbRow_id) {
+        this.localDbRow_id = localDbRow_id;
+    }
 
     public String getAdult() {
         return adult;
@@ -135,5 +147,34 @@ public class MovieJsonObject implements Parcelable{
         dest.writeString(video);
         dest.writeString(vote_average);
         dest.writeString(vote_count);
+        dest.writeLong(localDbRow_id);
     }
+
+   public static final Parcelable.Creator<MovieJsonObject> CREATOR
+            = new Parcelable.Creator<MovieJsonObject>() {
+        public MovieJsonObject createFromParcel(Parcel in) {
+            return new MovieJsonObject(in);
+        }
+
+        public MovieJsonObject[] newArray(int size) {
+            return new MovieJsonObject[size];
+        }
+    };
+
+    private MovieJsonObject(Parcel in) {
+        adult = in.readString();
+        backdrop_path = in.readString();
+        id =in.readString();
+        original_language = in.readString();
+        original_title= in.readString();
+        overview= in.readString();
+        release_date= in.readString();
+        poster_path= in.readString();
+        title= in.readString();
+        video= in.readString();
+        vote_average= in.readString();
+        vote_count= in.readString();
+        localDbRow_id= in.readLong();
+    }
+
 }

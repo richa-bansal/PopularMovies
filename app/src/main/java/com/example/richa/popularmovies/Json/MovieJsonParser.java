@@ -1,4 +1,6 @@
-package com.example.richa.popularmovies;
+package com.example.richa.popularmovies.Json;
+
+import com.example.richa.popularmovies.Json.MovieJsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
