@@ -5,4 +5,7 @@ Please modify following files and update API key for themoviedb.org
 Line ->
 private final String API_KEY = "";  // replace blank string with your API key
 
-2) File name ->
+2) File name ->app.src.main.java.com.example.richa.popularmovies.TrailersReviewsTaskFragment.FetchDetailDataTask
+Line ->
+private final String API_KEY = ""; // replace blank string with your API key
+
