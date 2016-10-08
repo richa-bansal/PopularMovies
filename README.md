@@ -15,6 +15,11 @@ App will:
 - movie reviews
 - Allow users to mark a movie as a favorite in the details view by tapping a button (This is for a local movies collection that the app will maintain and does not require an API request*.)
 
+App screen shots:
+----------------
+
+![GitHub Logo](device-popularMovies_pictures.jpeg)
+
 
 How To Install/Run:
 ---------------------
